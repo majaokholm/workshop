@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${{APP_NAME_BACK}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${{APP_NAME_BACK}}
+  template:
+    metadata:
+      labels:
+        app: ${{APP_NAME_BACK}}
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: ${{APP_NAME_BACK}}
+        image: mcr.microsoft.com/oss/bitnami/redis:6.0.8
+        env:
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        ports:
+        - containerPort: 6379
+          name: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${{APP_NAME_BACK}}
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: ${{APP_NAME_BACK}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${{APP_NAME_FRONT}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${{APP_NAME_FRONT}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: ${{APP_NAME_FRONT}
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: ${{APP_NAME_FRONT}
+        image: mcr.microsoft.com/azuredocs/azure-vote-front:v1
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        env:
+        - name: REDIS
+          value: "${{APP_NAME_BACK}}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${{APP_NAME_FRONT}
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: ${{APP_NAME_FRONT}
