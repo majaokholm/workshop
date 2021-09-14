@@ -81,12 +81,11 @@ Install-Module -Name "Az" -Scope AllUsers
 #>
 minikube status
 minikube config set driver hyperv
-
-minikube start
+minikube start --network-plugin=cni
 minikube status
 
 # to start minikube with a specific hyper-v switch (default is just first available) - use the following:
-#minikube start --vm-driver hyperv --hyperv-virtual-switch "Default Switch"
+#minikube start --vm-driver hyperv --hyperv-virtual-switch "Default Switch" --network-plugin=cni
 #endregion step 3
 
 ##########################
