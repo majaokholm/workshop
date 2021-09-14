@@ -3,14 +3,17 @@
     Find-ReplaceTokenInFiles -Path .\src\yaml\azure-vote_replaceMe.yaml
     Find-ReplaceTokenInFiles -Path C:\files:\azure*
     Find-ReplaceTokenInFiles  -path .\* -Extensions "*.yaml"
+    Get-Content .\src\yaml\azure-vote.yaml -Raw | Find-ReplaceToken -Return | kubectl apply --namespace $nsName -f -
+    Get-Content .\src\yaml\azure-vote.yaml -Raw | Find-ReplaceToken -Return
 #>
 function Find-ReplaceToken {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline=$true)]
         [string]$String, #String that you want to replace tokens in
         [string]$TokenPrefix = '${{',
-        [string]$TokenSuffix = '}}'
+        [string]$TokenSuffix = '}}',
+        [switch]$Return # "Always returns text/string" - returns string no matter if you have replaced tokens or not
     )
     $ret = [System.Text.StringBuilder]::new($String)
     $found = New-Object 'System.Collections.Stack'
@@ -67,7 +70,14 @@ function Find-ReplaceToken {
     if ($replacedTokens) {
         return $ret.ToString()
     }
-    return [string]::Empty
+
+    if ($Return) {
+        $ret.ToString()
+    }
+    else {
+        return [string]::Empty
+    }
+    
 }# Function Find-ReplaceToken
 
 function Find-ReplaceTokenInFiles {
@@ -86,7 +96,7 @@ function Find-ReplaceTokenInFiles {
     if ( !([string]::IsNullOrEmpty($Extensions)) ) {
         $Arguments.Add('Include', $Extensions)
     }
-    
+
     if ( !([string]::IsNullOrEmpty($Recurse)) ) {
         $Arguments.Add('Recurse', $Recurse)
     }
