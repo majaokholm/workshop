@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web
+  name: web
+spec: 
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - command: ["sleep"]
+        args: ["999"]
+        image: ubuntu:latest
+        name: web
+        securityContext:
+          readOnlyRootFilesystem: true
+        volumeMounts:
+          - mountPath: /writeable/location/here
+            name: volName
+      volumes:
+      - emptyDir: {}
+        name: volName

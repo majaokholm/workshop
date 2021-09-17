@@ -1,0 +1,57 @@
+--
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: your-namespace-name
+name: pod-reader
+  rules:
+  - apiGroups: [“”] # “” indicates the core API group
+    resources: [“pods”]
+    verbs: [“get”, “watch”, “list”]
+-- 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: default
+# “namespace” omitted since ClusterRoles are not bound to a namespace
+  name: global-pod-reader
+rules:
+  - apiGroups: [“”] # “” indicates the core API group
+    resources: [“pods”]
+    verbs: [“get”, “watch”, “list”]
+-- 
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows “jane” to read Pods in the “your-namespace-name” namespace.
+# You need to already have a Role names “pod-reader” in that namespace.
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: your-namespace-name
+subjects:
+# You can specify more than one “subject”
+  - kind: User
+    name: jane # “name” is case sensitive
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  # “roleRef” specifies the binding to a Role/ClusterRole
+  # kind: Role # this must be a Role or ClusterRole
+  # this must match the name of the Role or ClusterRole you wish to bind 
+  # to
+  name: pod-reader 
+  apiGroup: rbac.authorization.k8s.io
+-- 
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binging allows anyone in the “manager” group to read 
+# Pod information in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: global-pod-reader
+subjects:
+# You can specify more than one “subject”
+- kind: Group
+  name: manager # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  # “roleRef” specifies the binding to a Role/ClusterRole
+  kind: ClusterRole # this must be a Role or ClusterRole
+  name: global-pod-reader # this must match the name of the Role or ClusterRole you wish to bind t
+  apiGroup: rbac.authorization.k8s.io
