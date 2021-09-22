@@ -3,7 +3,7 @@
 
 <#
 -- below code should be in an ADMIN terminal
--- So open Powershell.exe as ADMINISTRATOR
+-- So open Powershell.exe as ADMINISTRATOR (hint: CTRL+SHIFT+ENTER shortcut will open as admin)
 #>
 
 ##########################
@@ -11,16 +11,17 @@
 # Step 1 -  Install choco (a windows package maanger)
 ##########################
 ## NOTE: Requires ADMIN POWERSHELL!
-
-If (-not (Test-Path "C:\ProgramData\chocolatey")) {
-    Write-Host "Installing Chocolatey"
-    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-}
-else {
-    Write-Host "Chocolatey is already installed."
+if ($adminProcess -eq $true) {
+    If (-not (Test-Path "C:\ProgramData\chocolatey")) {
+        Write-Host "Installing Chocolatey"
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    }
+    else {
+        Write-Host "Chocolatey is already installed."
+    }
 }
 #endregion step 1
-
+#_________________________________________________________________________#
 
 ##########################
 #region step 2
@@ -57,21 +58,27 @@ choco install k9s -y
 
 # maybe you also need the following:
 ## NOTE: Requires ADMIN POWERSHELL!
+# - OPTIONAL!
 choco install -y git
 choco install -y vscode 
 choco install -y azure-cli
 
 # you can also install powershell core if you want
 ## NOTE: Requires ADMIN POWERSHELL!
+# - OPTIONAL!
 Choco install -y powershell-core
 
 # if you want azure powershell installed:
 ## NOTE: Requires ADMIN POWERSHELL!
+# - OPTIONAL!
 Install-PackageProvider -Name "NuGet" -MinimumVersion 2.8.5.201 -Force | Out-Null
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted | Out-null
 Install-Module -Name "Az" -Scope AllUsers
 
 #endregion step 2
+#_________________________________________________________________________#
+
+
 
 ##########################
 #region step 3
@@ -79,29 +86,38 @@ Install-Module -Name "Az" -Scope AllUsers
 <#
 # Step 3: Start minikube!
 #>
-minikube status
-minikube config set driver hyperv
-minikube start --network-plugin=cni
-minikube status
+if ($adminProcess -eq $true) {
+    minikube status
+    minikube config set driver hyperv
+    minikube start
+    minikube status
+}
 
 # to start minikube with a specific hyper-v switch (default is just first available) - use the following:
 #minikube start --vm-driver hyperv --hyperv-virtual-switch "Default Switch" --network-plugin=cni
 #endregion step 3
+#_________________________________________________________________________#
+
+
+
+
+
 
 ##########################
 #region step 4
 ##########################
 <# Step 4
+-- OPTIONAL
 -- if you want you can install a bunch of VS Code extensions for Azure
 -- below cmds should be run inside a Windows Powershell Terminal
    (properly not as ADMIN)
 #>
 
 code --install-extension ms-vscode.vscode-node-azure-pack
+code --install-extension ms-vscode.powershell
 code --install-extension msazurermtools.azurerm-vscode-tools
 
 code --install-extension ms-azure-devops.azure-pipelines
-code --install-extension ms-vscode.powershell
 code --install-extension ms-azuretools.vscode-azureappservice     
 code --install-extension ms-azuretools.vscode-azurefunctions      
 code --install-extension ms-azuretools.vscode-azureresourcegroups 
@@ -114,4 +130,5 @@ code --install-extension ms-dotnettools.vscode-dotnet-runtime
 code --install-extension ms-vscode.azure-account
 code --install-extension ms-vscode.azurecli
 
-#endregion step 3
+#endregion step 4
+#_________________________________________________________________________#

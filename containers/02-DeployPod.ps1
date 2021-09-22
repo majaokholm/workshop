@@ -1,7 +1,8 @@
 ## Deploying a pod to minikube
+Set-alias -Name k -Value kubectl
 
 minikube status
-##  maybe you need to run: 
+##  is minikube running? - to start minikube:
 # minikube start --network-plugin=cni
 kubectl config current-context
 
@@ -20,9 +21,13 @@ kubectl get events -n $nsName
 
 # expose port
 kubectl expose deployment hello-node --type=LoadBalancer --port=8080 --name=hello-node-svc -n $nsName
-# because we run minikube, we can make the service available this way:
-minikube service hello-node-svc
 
+# because we run minikube, we can make the service available this way:
+# (remember to run in an admin terminal)
+if ($adminProcess -eq $true) {
+  $nsName = "helloworldapp"
+  minikube service hello-node-svc -n $nsName
+}
 #option 2:
 # write yaml to local drive and deploy yaml file
 kubectl get pod,svc -n $nsName
@@ -114,15 +119,53 @@ spec:
 '@
 
 
+$nsName = "azure-vote-app"
 
+#lets try to write yaml file to local disk (for fun)
 $yml | Out-File .\src\yaml\azure-vote.yaml # write yaml to local file
-Get-Content .\src\yaml\azure-vote.yaml | select -First 5 # view first 5 lines of yaml
-$yml | kubectl apply --namespace $nsName -f - # deploy yaml!
+Get-Content .\src\yaml\azure-vote.yaml | select -First 5 # view first 5 lines of yaml file
+# deploy yaml!
+$yml | kubectl apply --namespace $nsName -f - 
 
 # clean up: (if needed)
 # kubectl delete namespace $nsName
 
 # because we run minikube, we can make the service available this way:
-minikube service azure-vote-front
+if ($adminProcess -eq $true) {
+  # (remember to run in an admin terminal)
+  $nsName = "azure-vote-app"
+  minikube service azure-vote-front -n $nsName
 
-minikube dashboard
+  #try openening the k8s dashboard!
+  ## remember to choose "ALL NAMESPACES" instead of "default" - in the top of the screen
+  minikube dashboard
+}
+
+
+<#
+## you can try to start "k9s" to see what you have deployed - it's a terminal UI
+## use arrow keys and press 0 to show all namespaces, and use keyboard to navigate
+## start k9s:
+k9s
+
+# example result:
+
+
+ Context: minikube                    ____  __.________         
+ Cluster: minikube                   |    |/ _/   __   \______  
+ User:    minikube                   |      < \____    /  ___/  
+ K9s Rev: v0.24.10 ⚡v0.24.15        |    |  \   /    /\___ \   
+ K8s Rev: v1.22.1                    |____|__ \ /____//____  >  
+ CPU:     n/a                                \/            \/   
+ MEM:     n/a                                                  
+ ┌──────────────────── Deployments(all)[7] ────────────────────┐
+ │ NAMESPACE↑            NAME                       READY DATE │
+ │ googlesamples         web                          1/1    1 │
+ │ helloworldapp         hello-node                   1/1    1 │
+ │ ingress-nginx         ingress-nginx-controller     1/1    1 │
+ │ ingress-traefik       traefik                      1/1    1 │
+ │ kube-system           coredns                      1/1    1 │
+ │ kubernetes-dashboard  dashboard-metrics-scraper    1/1    1 │
+ │ kubernetes-dashboard  kubernetes-dashboard         1/1    1 │
+ │                                                             │
+#>
