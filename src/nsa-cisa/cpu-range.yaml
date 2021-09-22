@@ -1,0 +1,16 @@
+--
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cpu-min-max-demo-lr # apply per namespace or globally
+spec:
+  limits: 
+  - default:
+    cpu: 1
+  defaultRequest:
+    cpu: 0.5
+  max: 
+    cpu: 2
+  min:
+    cpu: 0.5 
+  type: Container
