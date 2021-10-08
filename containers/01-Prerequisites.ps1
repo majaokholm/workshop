@@ -8,10 +8,9 @@
 
 ##########################
 #region step 1
-# Step 1 -  Install choco (a windows package maanger)
+# Step 1 -  Install choco (a windows package manager)
 ##########################
 ## NOTE: Requires ADMIN POWERSHELL!
-if ($adminProcess -eq $true) {
     If (-not (Test-Path "C:\ProgramData\chocolatey")) {
         Write-Host "Installing Chocolatey"
         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
@@ -19,7 +18,7 @@ if ($adminProcess -eq $true) {
     else {
         Write-Host "Chocolatey is already installed."
     }
-}
+    
 #endregion step 1
 #_________________________________________________________________________#
 
@@ -71,7 +70,7 @@ Choco install -y powershell-core
 # if you want azure powershell installed:
 ## NOTE: Requires ADMIN POWERSHELL!
 # - OPTIONAL!
-Install-PackageProvider -Name "NuGet" -MinimumVersion 2.8.5.201 -Force | Out-Null
+Install-PackageProvider -Name "NuGet" -MinimumVersion 2.8.5.201 -Force | Out-Nullw
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted | Out-null
 Install-Module -Name "Az" -Scope AllUsers
 
@@ -86,12 +85,12 @@ Install-Module -Name "Az" -Scope AllUsers
 <#
 # Step 3: Start minikube!
 #>
-if ($adminProcess -eq $true) {
+## NOTE: Requires ADMIN POWERSHELL!
     minikube status
     minikube config set driver hyperv
     minikube start
     minikube status
-}
+
 
 # to start minikube with a specific hyper-v switch (default is just first available) - use the following:
 #minikube start --vm-driver hyperv --hyperv-virtual-switch "Default Switch" --network-plugin=cni
