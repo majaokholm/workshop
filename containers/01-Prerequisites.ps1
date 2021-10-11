@@ -1,5 +1,7 @@
 ## Prerequisites for workshop.
-
+Write-host 'Code should be run "line by line", not as one full script.' -ForegroundColor Black -BackgroundColor Yellow
+Write-host 'So copy code into ISE or VS Code and use F8 to run code lines, one section at the time.' -ForegroundColor Black -BackgroundColor Yellow
+Return
 
 <#
 -- below code should be in an ADMIN terminal
