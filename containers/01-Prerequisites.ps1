@@ -72,7 +72,7 @@ Choco install -y powershell-core
 # if you want azure powershell installed:
 ## NOTE: Requires ADMIN POWERSHELL!
 # - OPTIONAL!
-Install-PackageProvider -Name "NuGet" -MinimumVersion 2.8.5.201 -Force | Out-Nullw
+Install-PackageProvider -Name "NuGet" -MinimumVersion 2.8.5.201 -Force | Out-Null
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted | Out-null
 Install-Module -Name "Az" -Scope AllUsers
 
