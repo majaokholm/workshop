@@ -1,17 +1,27 @@
 ## Deploying a pod to minikube
-Set-alias -Name k -Value kubectl
+"Below commands should be run 'one by one', try to not copy paste too much"
+"Non admin commands should be executed in powershell terminal inside VS Code or ISE - use shortcut key 'F8' to run selected code"
 
 minikube status
 ##  is minikube running? - to start minikube:
-# minikube start --network-plugin=cni
+# minikube start --network-plugin=cni # (remember to run as ADMIN!)
+
+# let's start with being lazy by setting "k" as alias to "kubectl"
+Set-alias -Name k -Value kubectl
+
+# Step 1 - Lets play with kubectl
+##########################
+
+# let's check if we're connected to minikube cluster
 kubectl config current-context
+k get node
 
 #Create a namespace
 $nsName = "helloworldapp"
 kubectl create namespace $nsName
 
 # option 1:
-# deploy yaml directly 
+# deploy pod directly with kubectl commands 
 
 kubectl create deployment hello-node --image=k8s.gcr.io/echoserver:1.4 -n $nsName
 
@@ -23,8 +33,8 @@ kubectl get events -n $nsName
 kubectl expose deployment hello-node --type=LoadBalancer --port=8080 --name=hello-node-svc -n $nsName
 
 # because we run minikube, we can make the service available this way:
-# (remember to run in an admin terminal)
-if ($adminProcess -eq $true) {
+## NOTE: Requires ADMIN POWERSHELL!
+{
   $nsName = "helloworldapp"
   minikube service hello-node-svc -n $nsName
 }
@@ -32,9 +42,13 @@ if ($adminProcess -eq $true) {
 # write yaml to local drive and deploy yaml file
 kubectl get pod,svc -n $nsName
 
+# Step 2 - Deploy vote app:
+##########################
 
-# Deploy vote app:
-$yml= @'
+# take a look a the YAML code inside the string variable called $yml.
+# it contains multiple resources, and each resource type is split by "---"
+
+$yml = @'
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -120,19 +134,28 @@ spec:
 
 
 $nsName = "azure-vote-app"
+kubectl create namespace $nsName
 
-#lets try to write yaml file to local disk (for fun)
+#lets try to write yaml file to local disk (for fun):
 $yml | Out-File .\src\yaml\azure-vote.yaml # write yaml to local file
 Get-Content .\src\yaml\azure-vote.yaml | select -First 5 # view first 5 lines of yaml file
-# deploy yaml!
+
+# let's deploy yaml to k8s!
+# below is 2 examples of ways you can apply yaml to your cluster - remember that "kubectl apply" will create/update resources
+
+## example 1:
+# you can just | ("pipe") your yaml code into "kubectl apply"
 $yml | kubectl apply --namespace $nsName -f - 
+## example 2: 
+# use "kubectl apply" and point to the file on the filesystem
+kubectl apply -f ".\src\yaml\azure-vote.yaml" --namespace $nsName 
 
 # clean up: (if needed)
 # kubectl delete namespace $nsName
 
 # because we run minikube, we can make the service available this way:
-if ($adminProcess -eq $true) {
-  # (remember to run in an admin terminal)
+## NOTE: Requires ADMIN POWERSHELL!
+{
   $nsName = "azure-vote-app"
   minikube service azure-vote-front -n $nsName
 
