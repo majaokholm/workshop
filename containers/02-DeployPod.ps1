@@ -150,8 +150,6 @@ $yml | kubectl apply --namespace $nsName -f -
 # use "kubectl apply" and point to the file on the filesystem
 kubectl apply -f ".\src\yaml\azure-vote.yaml" --namespace $nsName 
 
-# clean up: (if needed)
-# kubectl delete namespace $nsName
 
 # because we run minikube, we can make the service available this way:
 ## NOTE: Requires ADMIN POWERSHELL!
@@ -163,6 +161,7 @@ kubectl apply -f ".\src\yaml\azure-vote.yaml" --namespace $nsName
   ## remember to choose "ALL NAMESPACES" instead of "default" - in the top of the screen
   minikube dashboard
 }
+
 
 
 <#
@@ -192,3 +191,6 @@ k9s
  │ kubernetes-dashboard  kubernetes-dashboard         1/1    1 │
  │                                                             │
 #>
+
+# clean up: (if needed)
+kubectl delete namespace $nsName
