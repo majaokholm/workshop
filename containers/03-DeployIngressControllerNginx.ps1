@@ -109,7 +109,7 @@ k get service app1 -n $nsName
 # app2:
 $App2_Yml | kubectl apply --namespace $nsName -f -
 k expose deployment app2 --type=NodePort --port=$App2_appPort -n $nsName
-k get service app1 -n $nsName
+k get service app2 -n $nsName
 
 # check deployments:
 k get deployments -n $nsName
