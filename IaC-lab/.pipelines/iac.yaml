@@ -1,4 +1,4 @@
-name: $(TeamProject)_$(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+name: $(System.TeamProject)_$(BuildDefinitionName)_$(Build.SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 variables:
   location: 'westeurope'
   GreatSuccess: true
