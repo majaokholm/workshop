@@ -1,4 +1,4 @@
-# Install Calico with Kubernetes API datastore, 50 nodes or less
+# Install Calico with Kubernetes API datastore (for 50 nodes or less)
 minikube status
 ##  maybe you need to run: 
 # minikube start --network-plugin=cni
@@ -17,6 +17,12 @@ NAMESPACE     NAME                READY   STATUS    RESTARTS   AGE
 kube-system   calico-node-8rsg5   1/1     Running   0          5m
 #>
 
+## before we deploy the policy, let's deploy a new pod, so we can
+## test if we can connect from this funky echoserver app
+kubectl create namespace "echoserver"
+kubectl create deployment "echoserver" --image=k8s.gcr.io/echoserver:1.4 -n "echoserver"
+kubectl get deployment -n "echoserver"
+
 # view IPs of pods:
 kubectl get pods -A -o wide
 <# example output:
@@ -26,12 +32,6 @@ helloworldapp   azure-vote-back-59d587dbb7-94lz9           1/1     Running     3
 helloworldapp   azure-vote-front-78dc4ff55b-7vhx6          1/1     Running     3          11d     10.88.0.7        minikube   <none>           <none>
 #>
 
-
-## before we deploy the policy, let's deploy a new pod, so we can
-## test if we can connect from this funky echoserver app
-kubectl create namespace "echoserver"
-kubectl create deployment "echoserver" --image=k8s.gcr.io/echoserver:1.4 -n "echoserver"
-kubectl get deployment -n "echoserver"
 <#
 - Open a new powershell windows, and execute below commands:
 1. check if you're connected to minikube:

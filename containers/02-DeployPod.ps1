@@ -193,4 +193,4 @@ k9s
 #>
 
 # clean up: (if needed)
-kubectl delete namespace $nsName
+#kubectl delete namespace $nsName

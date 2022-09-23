@@ -1,0 +1,32 @@
+parameters:
+- name: azSvcCon
+  type: string
+- name: parameterFile
+  type: string
+  default: ''
+
+variables:
+  bicepMainFile: '.\IaC-lab\bicep\main.bicep'
+
+steps:
+- task: AzurePowerShell@5
+  name: AwesomeInfraDeploy
+  inputs:
+    ScriptType: InlineScript
+    azurePowerShellVersion: LatestVersion
+    azureSubscription: "${{ parameters.azSvcCon }}"
+    pwsh: true ### IMPORTANT
+    Inline: |
+      # . .\IaC-Lab\pwsh\kvFunctions.ps1 # for later
+      $Timestamp = Get-date -Format "yyyyMMddHHmmss"
+
+      # below powershell technique is called "splatting"
+      $params = @{
+       TemplateFile          = "$(bicepMainFile)"
+       location              = "$(location)"
+      }
+
+      # we can use sub level deploy: New-AzSubscriptionDeployment @args -verbose -ErrorAction Stop
+      ## AzSubscriptionDeployment @params 
+      # but we want ResourceGroup level deploy this time
+      New-AzResourceGroupDeployment @params # notice the 

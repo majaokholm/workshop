@@ -1,0 +1,38 @@
+name: $(TeamProject)_$(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+variables:
+  location: 'westeurope'
+  GreatSuccess: true
+
+trigger: none
+# trigger:
+#   branches:
+#     include:
+#     - main
+#   paths:
+#       exclude:
+#       - README.md
+
+stages:
+  - stage: dev
+    jobs:
+    - job: IaC
+      timeoutInMinutes: 60
+      steps:
+        - template: iac-template.yaml
+          parameters:
+            # parameterFile: '.\parametersProd.json'
+            azSvcCon: 'MySvcConnection'
+ 
+  # - stage: prod
+  #   condition:  eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  #   variables:
+  #     env: 'prod'
+  #     envShort: 'p'
+  #     envLong: 'production'
+  #   jobs:
+  #   - job: IaC_deployment
+  #     steps:
+  #       - template: iac-template.yaml
+  #         parameters:
+  #           # parameterFile: '.\parametersProd.json'
+  #           azSvcCon: 'MySvcConnection'
